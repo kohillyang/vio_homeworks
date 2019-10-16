@@ -1,0 +1,7 @@
+cmake_minimum_required(VERSION 3.5.1)
+project(vio_homeworks)
+find_package(Eigen3 REQUIRED)
+message(STATUS ${EIGEN3_INCLUDE_DIR})
+find_package(OpenCV REQUIRED COMPONENTS core highgui imgproc calib3d video)
+add_executable(${PROJECT_NAME} main.cpp ${Opencv_LIBARIES})
+target_include_directories(${PROJECT_NAME} PRIVATE ${EIGEN3_INCLUDE_DIR})
