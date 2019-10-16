@@ -52,5 +52,11 @@ int main(){
 	cout << R_result_by_rotation_matrix << endl;
 	cout << "Results by quaternion " << endl;
 	cout << R_result_by_quaternion << endl;
+
+
+	char buf[1000];
+	float j = 10 + 5;
+	sprintf(buf, "%s %s %f ssdbnibb %x", "122", "222", j, (int)j);
+	cout << buf << endl;
 }
 
