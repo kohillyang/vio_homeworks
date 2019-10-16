@@ -4,3 +4,15 @@ bin
 \.project
 
 \.cproject
+
+h001/ctextemp_main.tex
+
+h001/ctextemp_main.tex.lst
+
+h001/main.aux
+
+h001/main.synctex.gz
+
+.log
+
+h001/main.log
