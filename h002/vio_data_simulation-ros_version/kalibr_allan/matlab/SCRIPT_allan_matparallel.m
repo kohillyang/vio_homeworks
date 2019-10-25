@@ -8,7 +8,7 @@ addpath('functions/allan_v3')
 % Our bag information
 %mat_path = '../data/imu_mtig700.mat';
 %mat_path = '../data/imu_tango.mat';
-mat_path = '../data/imu_visensor.mat';
+mat_path = '/home/zyx/imu.mat';
 
 % IMU information (todo: move this to the yaml file)
 %update_rate = 400;

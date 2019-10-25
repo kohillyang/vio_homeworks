@@ -16,3 +16,11 @@ h001/main.synctex.gz
 .log
 
 h001/main.log
+
+h002/vio_data_simulation-ros_version/build/
+
+h002/vio_data_simulation-ros_version/\.catkin_workspace
+
+h002/vio_data_simulation-ros_version/devel/\.catkin
+
+h002/vio_data_simulation-ros_version/devel/
