@@ -26,3 +26,11 @@ h002/vio_data_simulation-ros_version/devel/\.catkin
 h002/vio_data_simulation-ros_version/devel/
 
 h003/CurveFitting_LM/\.settings/
+
+*.aux
+
+*.log
+
+h003/main.pdf
+
+h003/main.synctex.gz

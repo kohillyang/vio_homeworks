@@ -160,15 +160,60 @@
     \includegraphics[width=.5\linewidth]{figures/fig2.png}    
     \caption{运行结果截图}
 \end{figure}
+\clearpage
 
 \section{公式推导}
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=.8\linewidth]{figures/fig3.png}    
 \end{figure}
-
+\begin{align}
+    \frac{\partial \boldsymbol{\alpha}_{b_{i} b_{k+1}}}{\partial \delta \mathbf{b}_{k}^{g}}    
+ &= \frac{\partial\boldsymbol{\alpha}_{b_{i} b_{k}}+\boldsymbol{\beta}_{b_{i} b_{k}} \delta t+\frac{1}{2} \mathbf{a} \delta t^{2}}{\partial \delta \mathbf{b}_{k}^{g}} \\
+ &= \frac{\partial\frac{1}{2} \mathbf{a} \delta t^{2}}{\partial \delta \mathbf{b}_{k}^{g}} \\
+ &= \frac{\partial\frac{1}{4}\left(\mathbf{q}_{b_{i} b_{k}}\left({\mathbf{a}}^{b_{k}}-\mathbf{b}_{k}^{a}\right)+\mathbf{q}_{b_{i} b_{k+1}}\left({\mathbf{a}}^{b_{k+1}}-\mathbf{b}_{k}^{a}\right)\right) \delta t^2}{\partial \delta \mathbf{b}_{k}^{g}} \\
+ &= \frac{\partial\frac{1}{4}\left(\mathbf{q}_{b_{i} b_{k}}\left({\mathbf{a}}^{b_{k+1}}-\mathbf{b}_{k}^{a}\right)\right) \delta t^2}{\partial \delta \mathbf{b}_{k}^{g}} \\
+ &= \frac{\partial\frac{1}{4}\left(\mathbf{R}_{b_{i} b_{k}}
+\exp \left( \left[ \frac{1}{2}(\mathbf{\omega}^{b_k} + \mathbf{\omega}^{b_{k + 1}} - \mathbf{b}_k^g) \delta t \right]_{\mathbf{x}} \right)
+ \left({\mathbf{a}}^{b_{k+1}}-\mathbf{b}_{k}^{a}\right)\right) \delta t^2}{\partial \delta \mathbf{b}_{k}^{g}} \\
+\end{align} 
+为了简化公式，令:
+\begin{equation}
+    \mathbf{O} = \left(\mathbf{R}_{b_{i} b_{k}}
+    \exp \left( \left[ \frac{1}{2}(\mathbf{\omega}^{b_k} + \mathbf{\omega}^{b_{k + 1}} - \mathbf{b}_k^g) \delta t \right]_{\mathbf{x}} \right)
+     \left({\mathbf{a}}^{b_{k+1}}-\mathbf{b}_{k}^{a}\right)\right)  
+\end{equation}
+于是：
+\begin{align}
+    \frac{\partial \boldsymbol{\alpha}_{b_{i} b_{k+1}}}{\partial \delta \mathbf{b}_{k}^{g}}    \\
+ &= \frac{\partial\frac{1}{4}\left(\mathbf{R}_{b_{i} b_{k}}
+\exp \left( \left[ \frac{1}{2}(\mathbf{\omega}^{b_k} + \mathbf{\omega}^{b_{k + 1}} - (\mathbf{b}_k^g + \delta \mathbf{b}_k^g))\delta t \right]_{\mathbf{x}}\right)
+ \left({\mathbf{a}}^{b_{k+1}}-\mathbf{b}_{k}^{a}\right)-\mathbf{O} \right)   \delta t^2}{\partial \delta \mathbf{b}_{k}^{g}} \\
+ &= \frac{\partial\frac{1}{4}\left(\mathbf{R}_{b_{i} b_{k}}
+ \exp \left( \left[ \frac{1}{2}(\mathbf{\omega}^{b_k} + \mathbf{\omega}^{b_{k + 1}} - \mathbf{b}_k^g ) \delta t\right]_{\mathbf{x}}\right)
+ \left[-\delta \mathbf{b}_k^g \delta t \right]_\mathbf{x}
+  \left({\mathbf{a}}^{b_{k+1}}-\mathbf{b}_{k}^{a}\right) \right)   \delta t^2}{\partial \delta \mathbf{b}_{k}^{g}} \\
+&= \frac{\partial\frac{1}{4}\left(\mathbf{R}_{b_{i} b_{k+1}}
+  \left[-\delta \mathbf{b}_k^g \delta t \right]_\mathbf{x}
+   \left({\mathbf{a}}^{b_{k+1}}-\mathbf{b}_{k}^{a}\right) \right)   \delta t^2}{\partial \delta \mathbf{b}_{k}^{g}}  \\
+&= \frac{\partial\frac{1}{4}\left(\mathbf{R}_{b_{i} b_{k+1}}
+   \left[ \left({\mathbf{a}}^{b_{k+1}}-\mathbf{b}_{k}^{a}\right) \right]_\mathbf{x}
+     \right)   \delta t^2}{\partial \delta \mathbf{b}_{k}^{g}}    
+    \delta \mathbf{b}_k^g \delta t \\
+&= \partial\frac{1}{4}\left(\mathbf{R}_{b_{i} b_{k+1}}
+    \left[ \left({\mathbf{a}}^{b_{k+1}}-\mathbf{b}_{k}^{a}\right) \right]_\mathbf{x}
+      \right)   \delta t^2  \delta t  \\
+&=-\frac{1}{4}\left(\mathbf{R}_{b_{i} b_{k+1}}\left[\left(\mathbf{a}^{b_{k+1}}-\mathbf{b}_{k}^{a}\right)\right]_{\mathbf{x}} \delta t^{2}\right)(-\delta t)
+\end{align} 
+因此PPT的f15得证。
+% \begin{align}
+%  \frac{\partial\frac{1}{4}\left(\mathbf{q}_{b_{i} b_{k}}\left({\mathbf{a}}^{b_{k}}-\mathbf{b}_{k}^{a}\right)+\mathbf{q}_{b_{i} b_{k+1}}\left({\mathbf{a}}^{b_{k+1}}-\mathbf{b}_{k}^{a}\right)\right)}{\partial \delta \mathbf{b}_{k}^{g}} 
+%  &= \frac{\partial\frac{1}{4}\left(\mathbf{q}_{b_{i} b_{k}} \otimes\left[\begin{array}{c}{1} \\ {\frac{1}{2} \omega \delta t}\end{array}\right]\left({\mathbf{a}}^{b_{k+1}}-\mathbf{b}_{k}^{a}\right)\right)}{\partial \delta \mathbf{b}_{k}^{g}} \\
+%  &= \frac{\partial\frac{1}{4}\left(\mathbf{q}_{b_{i} b_{k}} \otimes\left[\begin{array}{c}{1} \\ {\frac{1}{2} \left(\frac{1}{2}\left(\omega^{b_{k}}+\omega^{b_{k+1}}\right)-\mathbf{b}_{k}^{g}\right) \delta t}\end{array}\right]\left({\mathbf{a}}^{b_{k+1}}-\mathbf{b}_{k}^{a}\right)\right)}{\partial \delta \mathbf{b}_{k}^{g}} 
+% \end{align}
 \section{证明}
 证明下面的结论
+
 \begin{figure}[h]
     \centering
     \includegraphics[width=.8\linewidth]{figures/fig4.png}    
