@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.1)
 project(slam_course)
 set(CMAKE_CXX_STANDARD 11)
-set(DEFAULT_BUILD_TYPE "Release")
+set(DEFAULT_BUILD_TYPE "Debug")
 if (NOT CMAKE_BUILD_TYPE)
     message(STATUS "Setting build type to '${DEFAULT_BUILD_TYPE}' as none was specified.")
     set(CMAKE_BUILD_TYPE "${DEFAULT_BUILD_TYPE}" CACHE

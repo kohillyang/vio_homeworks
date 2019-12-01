@@ -155,6 +155,7 @@ void Problem::MakeHessian() {
     ulong size = ordering_generic_;
     MatXX H(MatXX::Zero(size, size));
     VecX b(VecX::Zero(size));
+    VecX Jacobian_(VecX::Zero(size));
 
     // TODO:: accelate, accelate, accelate
 //#ifdef USE_OPENMP
