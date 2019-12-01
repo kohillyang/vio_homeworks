@@ -106,6 +106,57 @@ private:
     Vec3 landmark_world_;
     Mat33 K_;
 };
+#include <stdio.h>
+class EdgePriorOnly : public Edge {
+public:
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
+
+    EdgePriorOnly(Qd q, Vec3 t):Edge(7, 1, std::vector<std::string>{"VertexPose"}){
+        this->q = q;
+        this->t = t;
+    };
+
+    /// 返回边的类型信息
+    virtual std::string TypeInfo() const override { return "EdgePriorOnly"; }
+
+    /// 计算残差
+    virtual void ComputeResidual() override{
+        VecX pose_params = verticies_[0]->Parameters();
+        Qd delta_q = Qd(pose_params[6], pose_params[3], pose_params[4], pose_params[5]) * this->q.inverse();
+        Vec3 delta_t = pose_params.head<3>() - this->t;
+        residual_.head<3>() = delta_t * 10;
+        residual_(3) = 0;
+        residual_(4) = 0;
+        residual_(5) = 0;
+        residual_(6) = 0;
+
+    };
+    inline Eigen::Matrix3d anti_symmetry_exp(const Eigen::Vector3d &v){
+        double theta = v.norm();
+        Eigen::Vector3d a = v / theta;
+        Eigen::Matrix3d a_x;
+        a_x << 0,    -a[2],  a[1],
+                a[2],  0,    -a[0],
+                -a[1],  a[0],  0;
+        double cos_theta = cos(theta);
+        double sin_theta = sin(theta);
+        Eigen::Matrix3d I = Eigen::Matrix3d::Identity();
+        return cos_theta * I + (1 - cos_theta) * a * a.transpose() + sin_theta * a_x;
+    }
+
+    virtual void ComputeJacobians() override{
+        VecX pose_params = verticies_[0]->Parameters();
+
+        Eigen::Matrix<double, 7, 6> J = Eigen::Matrix<double, 7, 6>::Zero();
+        J.block<3, 3>(0, 0) = Eigen::Matrix3d::Identity();
+        jacobians_[0] = J;
+    };
+
+private:
+    Qd q;
+    Vec3 t;
+};
+
 
 }
 }

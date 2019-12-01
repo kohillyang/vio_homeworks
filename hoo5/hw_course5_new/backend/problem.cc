@@ -403,7 +403,7 @@ void Problem::SolveLinearSystem() {
 
         // TODO:: home work. step3: solve landmark
         VecX delta_x_ll(marg_size);
-        delta_x_ll = bmm - Hmp * delta_x_pp;
+        delta_x_ll = Hmm.inverse() * (bmm -  Hmp * delta_x_pp);
         delta_x_.tail(marg_size) = delta_x_ll;
 
     }

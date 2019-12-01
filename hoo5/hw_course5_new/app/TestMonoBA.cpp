@@ -76,7 +76,15 @@ int main() {
         Eigen::VectorXd pose(7);
         pose << cameras[i].twc, cameras[i].qwc.x(), cameras[i].qwc.y(), cameras[i].qwc.z(), cameras[i].qwc.w();
         vertexCam->SetParameters(pose);
-
+        if(i < 2){
+            auto q = Eigen::Quaterniond(cameras[i].qwc.w(), cameras[i].qwc.x(), cameras[i].qwc.y(), cameras[i].qwc.z());
+            auto t = cameras[i].twc;
+            auto edge = std::make_shared<EdgePriorOnly>(q, t);
+            std::vector<std::shared_ptr<Vertex> > edge_vertex;
+            edge_vertex.push_back(vertexCam);
+            edge->SetVertex(edge_vertex);
+            problem.AddEdge(edge);
+        }
 //        if(i < 2)
 //            vertexCam->SetFixed();
 
