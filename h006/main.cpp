@@ -5,10 +5,11 @@
 #include <vector>
 #include <assert.h>
 #include <iostream>
+#include <random>
 using namespace Eigen;
 using namespace std;
 Vector4f triangulate(std::vector<Eigen::Matrix<float, 3, 4>> KTs, std::vector<Eigen::Vector2f> mns){
-    assert(KTs.size() > 2);
+    assert(KTs.size() >= 2);
     MatrixXf A(KTs.size() *2, 4);
     for(int i =0; i< KTs.size(); i++){
         Eigen::Matrix<float, 3, 4> &KT = KTs[i];
@@ -22,6 +23,8 @@ Vector4f triangulate(std::vector<Eigen::Matrix<float, 3, 4>> KTs, std::vector<Ei
 
     JacobiSVD<Eigen::MatrixXf> svd(A, ComputeThinU | ComputeThinV );
     Matrix4f V = svd.matrixV();
+    Vector4f svs = svd.singularValues();
+    cout << svs(3) / svs(2);
     Vector4f r =  V.block<4, 1>(0, 3);
     r /= r(3);
     return r;
@@ -33,7 +36,7 @@ int main(){
          0,     600, 240,
          0,     0,   1;
     Vector4f P_real = {1.0f, 1.0f, 40.0f, 1.0f};
-    Matrix<float, 3, 4> Ts[4];
+    Matrix<float, 3, 4> Ts[6];
     Ts[0] << 1.0, 0,    0, 0.0,
              0.0, 1.0,  0, 0,
              0,   0,    1.0, 0;
@@ -46,13 +49,31 @@ int main(){
     Ts[3] << 1.0, 0,    0, 3.0,
             0.0, 1.0,  0, 0,
             0,   0,    1.0, 0;
-    std::vector<Eigen::Matrix<float, 3, 4>> KTs;
-    std::vector<Eigen::Vector2f> mns;
-    for(int i = 0; i < sizeof(Ts) / sizeof(Matrix<float, 4, 3>); i++){
-        Vector3f mn = K * Ts[i] * P_real;
-        mn /= mn(2);
-        KTs.push_back(K * Ts[i]);
-        mns.push_back(mn.block<2, 1>(0, 0));
+
+    Ts[4] << 1.0, 0,    0, 4.0,
+            0.0, 1.0,  0, 0,
+            0,   0,    1.0, 0;
+
+    Ts[5] << 1.0, 0,    0, 5.0,
+            0.0, 1.0,  0, 0,
+            0,   0,    1.0, 0;
+
+    for(int num_frame =2; num_frame <= 6; num_frame += 1){
+        float sigma = 1.0f;
+        std::vector<Eigen::Matrix<float, 3, 4>> KTs;
+        std::vector<Eigen::Vector2f> mns;
+        default_random_engine r_engine(time(0));
+        normal_distribution<float> normalDistribution(0,sigma);
+        cout << num_frame << ",";
+        for(int i = 0; i < num_frame; i++){
+            Vector3f mn = K * Ts[i] * P_real;
+            mn /= mn(2);
+            mn(0) += normalDistribution(r_engine);
+            mn(1) += normalDistribution(r_engine);
+            KTs.push_back(K * Ts[i]);
+            mns.push_back(mn.block<2, 1>(0, 0));
+        }
+        cout << "," << triangulate(KTs, mns).transpose();
+        cout << endl;
     }
-    cout << triangulate(KTs, mns);
 }
