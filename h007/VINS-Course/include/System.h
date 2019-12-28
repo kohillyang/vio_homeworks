@@ -47,7 +47,7 @@ public:
     ~System();
 
     void PubImageData(double dStampSec, cv::Mat &img);
-
+    void PubImageData(double dStampSec, const std::vector<std::vector<double>> &features, cv::Mat &img);
     void PubImuData(double dStampSec, const Eigen::Vector3d &vGyr, 
         const Eigen::Vector3d &vAcc);
 

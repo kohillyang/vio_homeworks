@@ -36,6 +36,7 @@ void PubImuData()
     QTextStream imu_stream(&imu_file);
     // timestamp (1)，imu quaternion(4)，imu position(3)，imu gyro(3)，imu acc(3)
 	QString line = imu_stream.readLine();
+	double last_timeStamp = -1e99;
 	while (!line.isNull()) // read imu data
 	{   QStringList line_split = line.split(" ");
 	    Q_ASSERT(line_split.size() == 14);
@@ -43,17 +44,70 @@ void PubImuData()
         Vector3d vAcc = Vector3d(line_split[11].toDouble(),line_split[12].toDouble(),line_split[13].toDouble());
         Vector3d vGyr = Vector3d(line_split[8].toDouble(),line_split[9].toDouble(),line_split[10].toDouble());
 		pSystem->PubImuData(dStampNSec / 1e9, vGyr, vAcc);
+//		cout << "imu timestamp" << dStampNSec << endl;
 		usleep(5000*nDelayTimes);
+        line = imu_stream.readLine();
+        if(last_timeStamp >= dStampNSec){
+            cerr << "last_timeStamp < dStampNSec" << endl;
+        }
+        last_timeStamp = dStampNSec / 1e9;
 	}
     imu_file.close();
 }
 
 void PubImageData()
 {
-	while (std::getline(fsImage, sImage_line) && !sImage_line.empty())
-	{
-		pSystem->PubImageData(dStampNSec / 1e9, img);
-	}
+    const QString cam_pose_path = "/data3/zyx/yks/vio_homeworks/h007/vio_data_simulation/bin/cam_pose.txt";
+    QFile cam_pose_file(cam_pose_path);
+    if (!cam_pose_file.open(QIODevice::ReadOnly | QIODevice::Text)){
+        std::exit(-1);
+    }
+    QTextStream cam_pose_stream(&cam_pose_file);
+    QString line = cam_pose_stream.readLine();
+    std::vector<double> timestamps;
+    int frame_id = 0;
+    cv::namedWindow("source image");
+
+    while (!line.isNull()){
+        line = cam_pose_stream.readLine();
+        QStringList line_split = line.split(" ");
+        auto time_stamp = line_split[0].toDouble();
+        timestamps.push_back(time_stamp);
+        line = cam_pose_stream.readLine();
+        // Read features from this path
+        std::vector<std::vector<double>> feature_of_this_frame;
+        Mat img(ROW*2, COL*2, CV_8UC1);
+        memset(img.data, 0, img.rows * img.cols);
+        {
+            QString frame_path = QString("/data3/zyx/yks/vio_homeworks/h007/vio_data_simulation/bin/keyframe/all_points_%1.txt").arg(frame_id);
+            QFile frame_file(frame_path);
+            if (!frame_file.open(QIODevice::ReadOnly | QIODevice::Text)){
+                std::exit(-1);
+            }
+            QTextStream frame_stream(&frame_file);
+            QString frame_line = frame_stream.readLine();
+            while(!frame_line.isNull()){
+                QStringList frame_line_split = frame_line.split(" ");
+                // x, y, z, 1, u, v
+                feature_of_this_frame.push_back({frame_line_split[0].toDouble(),
+                                                 frame_line_split[1].toDouble(),
+                                                 frame_line_split[2].toDouble(),
+                                                 frame_line_split[3].toDouble(),
+                                                 frame_line_split[4].toDouble(),
+                                                 frame_line_split[5].toDouble()
+                                                 });
+                double cx = frame_line_split[4].toDouble() *460+255;
+                double cy = frame_line_split[5].toDouble() *460+255;
+                cv::circle(img, cv::Point2d(cx, cy), 3, cv::Scalar(255, 255, 255), -1);
+                frame_line = frame_stream.readLine();
+            }
+        }
+        pSystem->PubImageData(time_stamp / 1e9, feature_of_this_frame, img);
+        line = cam_pose_stream.readLine();
+        usleep(50000*nDelayTimes);
+        frame_id += 1;
+    }
+
 }
 
 #ifdef __APPLE__
