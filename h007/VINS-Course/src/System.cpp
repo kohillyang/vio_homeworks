@@ -210,22 +210,23 @@ void System::PubImageData(double dStampSec, const std::vector<std::vector<double
     }
     else
     {
+    	cout <<round(1.0 * pub_count / (dStampSec - first_image_time))<< endl;
         PUB_THIS_FRAME = false;
     }
 
     TicToc t_r;
     // cout << "3 PubImageData t : " << dStampSec << endl;
-    trackerData[0].readImage(img, dStampSec);
-
-    for (unsigned int i = 0;; i++)
-    {
-        bool completed = false;
-        completed |= trackerData[0].updateID(i);
-
-        if (!completed)
-            break;
-    }
-    if (PUB_THIS_FRAME)
+//    trackerData[0].readImage(img, dStampSec);
+//
+//    for (unsigned int i = 0;; i++)
+//    {
+//        bool completed = false;
+//        completed |= trackerData[0].updateID(i);
+//
+//        if (!completed)
+//            break;
+//    }
+    if (true)
     {
         pub_count++;
         shared_ptr<IMG_MSG> feature_points(new IMG_MSG());
@@ -245,18 +246,24 @@ void System::PubImageData(double dStampSec, const std::vector<std::vector<double
                 hash_ids[i].insert(p_id);
                 double x = features[j][1];
                 double y = features[j][2];
-                double z = 1;
-                double vx = features[j][3];
-                double vy = features[j][4];
-                feature_points->points.push_back(Vector3d(x, y, z));
+                double z = features[j][3];
+                double u = features[j][4];
+                double v = features[j][5];
+                double cx = features[j][6];
+                double cy = features[j][7];
+                double vx = features[j][8];
+                double vy = features[j][9];
+                cout << dStampSec << " " << j << " " << u << " " << v << endl;
+                feature_points->points.push_back(Vector3d(u, v, 1));
                 feature_points->id_of_point.push_back(p_id * NUM_OF_CAM + i);
-                feature_points->u_of_point.push_back(x);
-                feature_points->v_of_point.push_back(y);
+                feature_points->u_of_point.push_back(u);
+                feature_points->v_of_point.push_back(v);
                 feature_points->velocity_x_of_point.push_back(vx);
                 feature_points->velocity_y_of_point.push_back(vy);
 //            }
             }
             //}
+            cout << init_pub << endl;
             // skip the first image; since no optical speed on frist image
             if (!init_pub)
             {
@@ -267,8 +274,8 @@ void System::PubImageData(double dStampSec, const std::vector<std::vector<double
             {
                 m_buf.lock();
                 feature_buf.push(feature_points);
-                // cout << "5 PubImage t : " << fixed << feature_points->header
-                //     << " feature_buf size: " << feature_buf.size() << endl;
+                 cout << "5 PubImage t : " << fixed << feature_points->header
+                     << " feature_buf size: " << feature_buf.size() << endl;
                 m_buf.unlock();
                 con.notify_one();
             }
@@ -291,10 +298,9 @@ void System::PubImageData(double dStampSec, const std::vector<std::vector<double
         cv::waitKey(1);
     }
 #endif
-    // cout << "5 PubImage" << endl;
+//     cout << "5 PubImage" << endl;
 
 }
-
 vector<pair<vector<ImuConstPtr>, ImgConstPtr>> System::getMeasurements()
 {
     vector<pair<vector<ImuConstPtr>, ImgConstPtr>> measurements;
@@ -354,7 +360,6 @@ void System::PubImuData(double dStampSec, const Eigen::Vector3d &vGyr,
 
     if (dStampSec <= last_imu_t)
     {
-        cerr << last_imu_t << " " << dStampSec;
         cerr << "imu message in disorder!" << endl;
         return;
     }

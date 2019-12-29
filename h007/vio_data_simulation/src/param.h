@@ -31,12 +31,12 @@ public:
     double pixel_noise = 1;              // 1 pixel noise
 
     // cam f
-    double fx = 460;
-    double fy = 460;
-    double cx = 255;
-    double cy = 255;
-    double image_w = 640;
-    double image_h = 640;
+//    double fx = 460;
+//    double fy = 460;
+//    double cx = 255;
+//    double cy = 255;
+//    double image_w = 640;
+//    double image_h = 640;
 
 
     // 外参数

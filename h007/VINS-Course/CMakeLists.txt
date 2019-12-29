@@ -6,6 +6,8 @@ set(CMAKE_CXX_FLAGS "-std=c++11")
 set(CMAKE_CXX_FLAGS_RELEASE "-Og -Wall -g")
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
+set(CUSTOM_Qt_ROOT /data3/zyx/yks/qt-everywhere-src-5.13.1/install)
+list(APPEND CMAKE_PREFIX_PATH ${CUSTOM_Qt_ROOT}/lib/cmake/Qt5)
 
 find_package(Eigen3 REQUIRED)
 find_package(Ceres REQUIRED)
@@ -23,9 +25,6 @@ include_directories(
   ${Pangolin_INCLUDE_DIRS}
   ${Boost_INCLUDE_DIRS}
 )
-
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin)
 
 add_library(camera_model SHARED
     src/camera_models/chessboard/Chessboard.cc

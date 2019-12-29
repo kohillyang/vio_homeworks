@@ -39,3 +39,17 @@ h007/VINS-Course/\.settings/
 
 
 bin/
+
+h007/vio_data_simulation/gen/cam_pose.txt
+
+h007/vio_data_simulation/gen/imu_int_pose_noise.txt
+
+h007/vio_data_simulation/gen/imu_pose_noise.txt
+
+h007/VINS-Course/gdb/__pycache__/
+
+h007/vio_data_simulation/gen/data_gen
+
+h007/h007.zip
+
+h007/~$main.docx

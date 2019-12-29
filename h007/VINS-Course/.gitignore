@@ -8,7 +8,6 @@
 *.synctex.gz
 *.toc
 *.nav
-*.so
 
 .vscode/
 build/
