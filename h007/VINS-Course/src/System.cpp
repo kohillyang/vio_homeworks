@@ -233,26 +233,28 @@ void System::PubImageData(double dStampSec, const std::vector<std::vector<double
         vector<set<int>> hash_ids(NUM_OF_CAM);
         for (int i = 0; i < NUM_OF_CAM; i++)
         {
-            auto &un_pts = trackerData[i].cur_un_pts;
-            auto &cur_pts = trackerData[i].cur_pts;
-            auto &ids = trackerData[i].ids;
-            auto &pts_velocity = trackerData[i].pts_velocity;
-            for (unsigned int j = 0; j < ids.size(); j++)
+//            auto &un_pts = trackerData[i].cur_un_pts;
+//            auto &cur_pts = trackerData[i].cur_pts;
+//            auto &ids = trackerData[i].ids;
+//            auto &pts_velocity = trackerData[i].pts_velocity;
+            for (unsigned int j = 0; j < features.size(); j++)
             {
-                if (trackerData[i].track_cnt[j] > 1)
-                {
-                    int p_id = ids[j];
-                    hash_ids[i].insert(p_id);
-                    double x = un_pts[j].x;
-                    double y = un_pts[j].y;
-                    double z = 1;
-                    feature_points->points.push_back(Vector3d(x, y, z));
-                    feature_points->id_of_point.push_back(p_id * NUM_OF_CAM + i);
-                    feature_points->u_of_point.push_back(cur_pts[j].x);
-                    feature_points->v_of_point.push_back(cur_pts[j].y);
-                    feature_points->velocity_x_of_point.push_back(pts_velocity[j].x);
-                    feature_points->velocity_y_of_point.push_back(pts_velocity[j].y);
-                }
+//                if (trackerData[i].track_cnt[j] > 1)
+//                {
+                int p_id = j;
+                hash_ids[i].insert(p_id);
+                double x = features[j][1];
+                double y = features[j][2];
+                double z = 1;
+                double vx = features[j][3];
+                double vy = features[j][4];
+                feature_points->points.push_back(Vector3d(x, y, z));
+                feature_points->id_of_point.push_back(p_id * NUM_OF_CAM + i);
+                feature_points->u_of_point.push_back(x);
+                feature_points->v_of_point.push_back(y);
+                feature_points->velocity_x_of_point.push_back(vx);
+                feature_points->velocity_y_of_point.push_back(vy);
+//            }
             }
             //}
             // skip the first image; since no optical speed on frist image
@@ -352,6 +354,7 @@ void System::PubImuData(double dStampSec, const Eigen::Vector3d &vGyr,
 
     if (dStampSec <= last_imu_t)
     {
+        cerr << last_imu_t << " " << dStampSec;
         cerr << "imu message in disorder!" << endl;
         return;
     }

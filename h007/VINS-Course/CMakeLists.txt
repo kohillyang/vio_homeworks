@@ -3,7 +3,7 @@ project(vins_estimator)
 
 set(CMAKE_BUILD_TYPE "Release")
 set(CMAKE_CXX_FLAGS "-std=c++11")
-set(CMAKE_CXX_FLAGS_RELEASE "-O3 -Wall -g")
+set(CMAKE_CXX_FLAGS_RELEASE "-Og -Wall -g")
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
@@ -12,7 +12,7 @@ find_package(Ceres REQUIRED)
 find_package(Pangolin REQUIRED)
 find_package(OpenCV REQUIRED)
 find_package(Boost REQUIRED COMPONENTS filesystem program_options system)
-
+find_package(Qt5 COMPONENTS Core REQUIRED)
 
 message(WARNING "OpenCV_VERSION: ${OpenCV_VERSION}")
 
@@ -75,7 +75,7 @@ target_link_libraries(MyVio
   camera_model)
 
 add_executable(run_euroc test/run_euroc.cpp)
-target_link_libraries(run_euroc 
+target_link_libraries(run_euroc Qt5::Core
   MyVio  
   -lpthread) 
 

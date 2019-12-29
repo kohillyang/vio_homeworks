@@ -43,8 +43,9 @@ void PubImuData()
 	    double dStampNSec = line_split[0].toDouble();
         Vector3d vAcc = Vector3d(line_split[11].toDouble(),line_split[12].toDouble(),line_split[13].toDouble());
         Vector3d vGyr = Vector3d(line_split[8].toDouble(),line_split[9].toDouble(),line_split[10].toDouble());
-		pSystem->PubImuData(dStampNSec / 1e9, vGyr, vAcc);
-//		cout << "imu timestamp" << dStampNSec << endl;
+        if(dStampNSec > 0){
+            pSystem->PubImuData(dStampNSec / 1e9, vGyr, vAcc);
+        }
 		usleep(5000*nDelayTimes);
         line = imu_stream.readLine();
         if(last_timeStamp >= dStampNSec){
@@ -67,7 +68,7 @@ void PubImageData()
     std::vector<double> timestamps;
     int frame_id = 0;
     cv::namedWindow("source image");
-
+    map<int, std::vector<std::vector<double>>> fid2feature;
     while (!line.isNull()){
         line = cam_pose_stream.readLine();
         QStringList line_split = line.split(" ");
@@ -86,22 +87,33 @@ void PubImageData()
             }
             QTextStream frame_stream(&frame_file);
             QString frame_line = frame_stream.readLine();
+            int point_id = 0;
             while(!frame_line.isNull()){
                 QStringList frame_line_split = frame_line.split(" ");
                 // x, y, z, 1, u, v
-                feature_of_this_frame.push_back({frame_line_split[0].toDouble(),
-                                                 frame_line_split[1].toDouble(),
-                                                 frame_line_split[2].toDouble(),
-                                                 frame_line_split[3].toDouble(),
-                                                 frame_line_split[4].toDouble(),
-                                                 frame_line_split[5].toDouble()
-                                                 });
-                double cx = frame_line_split[4].toDouble() *460+255;
-                double cy = frame_line_split[5].toDouble() *460+255;
+                double u = frame_line_split[4].toDouble();
+                double v = frame_line_split[5].toDouble();
+                double cx = u *460 + 255;
+                double cy = v *460 + 255;
+                double vx = 0;
+                double vy = 0;
+                if(frame_id > 0){
+                    vector<double> & last_feature_point = fid2feature[frame_id-1][point_id];
+                    double lastTime = last_feature_point[0];
+                    double last_cx = last_feature_point[3];
+                    double last_cy = last_feature_point[4];
+                    vx = (cx - last_cx) / (time_stamp - lastTime);
+                    vy = (cy - last_cy) / (time_stamp - lastTime);
+                } else{
+                    // The first frame, velocity can't be estimated.
+                }
+                feature_of_this_frame.push_back({time_stamp, u, v, cx, cy, vx, vy});
                 cv::circle(img, cv::Point2d(cx, cy), 3, cv::Scalar(255, 255, 255), -1);
                 frame_line = frame_stream.readLine();
+                point_id += 1;
             }
         }
+        fid2feature[frame_id] = feature_of_this_frame;
         pSystem->PubImageData(time_stamp / 1e9, feature_of_this_frame, img);
         line = cam_pose_stream.readLine();
         usleep(50000*nDelayTimes);
