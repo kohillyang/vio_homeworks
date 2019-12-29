@@ -1,5 +1,4 @@
 cmake-build-debug
-bin
 \.idea
 \.project
 
@@ -36,3 +35,7 @@ h003/main.pdf
 h003/main.synctex.gz
 
 h007/VINS-Course/\.settings/
+
+
+
+bin/
